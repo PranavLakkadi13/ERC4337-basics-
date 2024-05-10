@@ -23,6 +23,12 @@ module.exports = {
       { version: "0.6.6" },
       { version: "0.8.21" },
     ],
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 10000,
+      },
+    },  
   },
   namedAccounts: {
     deployer: {
@@ -40,6 +46,9 @@ module.exports = {
       // forking: {
       //   url: RPC_URL_Alchemy_MAINNET,
       // },
+      gaslimit: 30000000,
+      blockGasLimit: 30000000,
+      allowUnlimitedContractSize: true,
     },
     sepolia: {
       url: RPC_URL_Alchemy_SEPOLIA,

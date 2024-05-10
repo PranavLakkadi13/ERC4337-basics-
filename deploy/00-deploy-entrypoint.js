@@ -5,13 +5,13 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deployer } = await getNamedAccounts();
 
   console.log("Deploying MyContract...");
-  const myContract = await deploy("MyContract", {
+  const EntryPoint = await deploy("EntryPoint", {
     from: deployer,
-    args: [], // Pass constructor arguments here if needed
+    args: [], 
     log: true,
   });
 
-  console.log("MyContract deployed to:", myContract.address);
+  console.log("Entry Point deployed to:", EntryPoint.address);
 };
 
-module.exports.tags = ["MyContract"];
+module.exports.tags = ["EntryPoint"];

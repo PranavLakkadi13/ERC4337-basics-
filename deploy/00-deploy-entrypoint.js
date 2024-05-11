@@ -4,7 +4,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  console.log("Deploying MyContract...");
+  console.log("Deploying EntryPoint...");
   const EntryPoint = await deploy("EntryPoint", {
     from: deployer,
     args: [], 
@@ -12,6 +12,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
 
   console.log("Entry Point deployed to:", EntryPoint.address);
+  console.log("--------------------------------------------------------");
 };
 
 module.exports.tags = ["EntryPoint"];

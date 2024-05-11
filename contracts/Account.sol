@@ -11,8 +11,8 @@ contract SmartAccount is IAccount {
     uint256 public counter;
     address public owner;
 
-    constructor() {
-        owner = msg.sender;
+    constructor(address _owner) {
+        owner = _owner;
     }
 
     function validateUserOp (
@@ -27,4 +27,13 @@ contract SmartAccount is IAccount {
         counter++;
     }
 
+}
+
+
+contract SmartAccountFactory {
+
+    function createSmartAccount(address _owner) external returns (address) {
+        SmartAccount account = new SmartAccount(_owner);
+        return address(account);
+    }
 }

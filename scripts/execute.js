@@ -1,4 +1,4 @@
-const { hre, ethers, deployments, getNamedAccounts } = require("hardhat");
+const { hre, ethers } = require("hardhat");
 
 const Factory_Nonce = 1;
 const Factory_Adderess = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
@@ -27,32 +27,58 @@ async function main() {
         from: Factory_Adderess,
         nonce: Factory_Nonce,
     });
+  
+  console.log(sender );
 
-    const AccountFactory = ethers.getContractFactory("SmartAccountFactory");
-    const initCode = Factory_Adderess + ((await AccountFactory).interface.encodeFunctionData("createSmartAccount", [accounts[0].address])).slice(2);
+    // let sender;
+    // try {
+    //   await entryPoint.getSenderAddress(initCode);
+    // } catch (ex) {
+    //   sender = "0x" + ex.data.slice(-40);
+    // }
+  
+  const AccountFactory = ethers.getContractFactory("SmartAccountFactory");
+  const initCode = Factory_Adderess + ((await AccountFactory).interface.encodeFunctionData("createSmartAccount", [accounts[0].address])).slice(2);
 
-    const Account = ethers.getContractFactory("SmartAccount");
-    const callData = (await Account).interface.encodeFunctionData("execute", []);
+  console.log(initCode);
 
-    const nonce = await entryPoint.getNonce(sender,0);
+  const code = await ethers.provider.getCode(sender);
+  if (code !== "0x") {
+    initCode = "0x";
+  }  
+  
+  console.log({ sender });
+  
+  await entryPoint.depositTo(sender, { value: ethers.parseEther("10") });
+  
+  const Account = await ethers.getContractFactory("SmartAccount");
+  const callData = Account.interface.encodeFunctionData("execute");
+  
+  console.log("code works till here");
 
-    const userOp = {
-        sender, // smart account address 
-        nonce,
-        initCode,
-        callData,
-        callGasLimit: 200_000 ,
-        verificationGasLimit: 200_000,
-        preVerificationGas: 50_000,
-        maxFeePerGas: ethers.parseUnits("10", "gwei"),
-        maxPriorityFeePerGas: ethers.parseUnits("5", "gwei"),
-        paymasterAndData: "0x",
-        signature: "0x"
-    }
+  const nonce = "0x" + (await entryPoint.getNonce(sender, 0)).toString(16);
+  
+  console.log("code works till here after the nonce");
+    
+  console.log(nonce);
 
-    const tx = await entryPoint.handleOps([userOp],accounts[0].address);
-    const receipt = await tx.wait();
-    console,log(receipt);
+  const userOp = {
+    sender, // smart account address 
+    nonce,
+    initCode,
+    callData,
+    callGasLimit: 200_000 ,
+    verificationGasLimit: 200_000,
+    preVerificationGas: 50_000,
+    maxFeePerGas: ethers.parseUnits("10", "gwei"),
+    maxPriorityFeePerGas: ethers.parseUnits("5", "gwei"),
+    paymasterAndData: "0x",
+    signature: "0x"
+  }
+
+  const tx = await entryPoint.handleOps([userOp],accounts[0].address);
+  const receipt = await tx.wait();
+  console.log(receipt);
 }
 
 main()

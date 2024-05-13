@@ -37,15 +37,14 @@ async function main() {
     //   sender = "0x" + ex.data.slice(-40);
     // }
   
-  const AccountFactory = ethers.getContractFactory("SmartAccountFactory");
-  const initCode = Factory_Adderess + ((await AccountFactory).interface.encodeFunctionData("createSmartAccount", [accounts[0].address])).slice(2);
+  const AccountFactory = await ethers.getContractFactory("SmartAccountFactory");
+  // const initCode = Factory_Adderess + ((AccountFactory).interface.encodeFunctionData("createSmartAccount", [accounts[0].address])).slice(2);
 
-  console.log(initCode);
+  // const initCode = Factory_Adderess + AccountFactory.interface.encodeFunctionData("createSmartAccount", [accounts[0].address]).slice(2);
 
-  const code = await ethers.provider.getCode(sender);
-  if (code !== "0x") {
-    initCode = "0x";
-  }  
+  const initCode = "0x";
+
+  console.log(initCode); 
   
   console.log({ sender });
   
@@ -60,8 +59,6 @@ async function main() {
   
   console.log("code works till here after the nonce");
     
-  console.log(nonce);
-
   const userOp = {
     sender, // smart account address 
     nonce,
@@ -76,7 +73,9 @@ async function main() {
     signature: "0x"
   }
 
-  const tx = await entryPoint.handleOps([userOp],accounts[0].address);
+  const tx = await entryPoint.handleOps([userOp],accounts[0].address,{
+  gasLimit: 1000000, // Adjust this value based on your needs
+});
   const receipt = await tx.wait();
   console.log(receipt);
 }

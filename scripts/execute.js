@@ -3,6 +3,7 @@ const { hre, ethers } = require("hardhat");
 const Factory_Nonce = 1;
 const Factory_Adderess = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 const EntryPoint_Address = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const PayMaster_Address = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0";
 
 /**
  * CREATE: This opcode is used to create a new address but cant be determined at compile time.
@@ -20,7 +21,7 @@ async function main() {
 
     const entryPoint = await ethers.getContractAt(
       "EntryPoint",
-      "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      EntryPoint_Address
     );
 
     const sender = ethers.getCreateAddress({
@@ -28,7 +29,7 @@ async function main() {
         nonce: Factory_Nonce,
     });
   
-  console.log(sender );
+  console.log(sender);
 
     // let sender;
     // try {
@@ -48,7 +49,7 @@ async function main() {
   
   console.log({ sender });
   
-  await entryPoint.depositTo(sender, { value: ethers.parseEther("10") });
+  await entryPoint.depositTo(PayMaster_Address, { value: ethers.parseEther("10") });
   
   const Account = await ethers.getContractFactory("SmartAccount");
   const callData = Account.interface.encodeFunctionData("execute");
@@ -64,20 +65,23 @@ async function main() {
     nonce,
     initCode,
     callData,
-    callGasLimit: 200_000 ,
-    verificationGasLimit: 200_000,
-    preVerificationGas: 50_000,
+    callGasLimit: 2_000_000 ,
+    verificationGasLimit: 2_000_000,
+    preVerificationGas: 500_000,
     maxFeePerGas: ethers.parseUnits("10", "gwei"),
     maxPriorityFeePerGas: ethers.parseUnits("5", "gwei"),
-    paymasterAndData: "0x",
+    paymasterAndData: PayMaster_Address,
     signature: "0x"
   }
 
   const tx = await entryPoint.handleOps([userOp],accounts[0].address,{
   gasLimit: 1000000, // Adjust this value based on your needs
-});
+  });
+
+  console.log("code works till here after the tx");
+
   const receipt = await tx.wait();
-  console.log(receipt);
+  // console.log(receipt);
 }
 
 main()

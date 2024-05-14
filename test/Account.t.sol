@@ -11,10 +11,10 @@ contract AccountTest is Test {
 
     function setUp() public {   
         vm.prank(owner);
-        account = new SmartAccount();
+        account = new SmartAccount(address(owner));
     }
 
-    function testDefaultOwner() public {
+    function testDefaultOwner() public view {
         assert(account.owner() == owner);
     }
 

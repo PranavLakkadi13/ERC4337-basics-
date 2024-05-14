@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 import { EntryPoint } from "@account-abstraction/contracts/core/EntryPoint.sol";
 import { IAccount } from "@account-abstraction/contracts/interfaces/IAccount.sol";
 import { UserOperation } from "@account-abstraction/contracts/interfaces/UserOperation.sol";
-// import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SmartAccount is IAccount {
 

@@ -43,9 +43,16 @@ async function main() {
   const AccountFactory = await ethers.getContractFactory("SmartAccountFactory");
   // const initCode = Factory_Adderess + ((AccountFactory).interface.encodeFunctionData("createSmartAccount", [accounts[0].address])).slice(2);
 
-  // const initCode = Factory_Adderess + AccountFactory.interface.encodeFunctionData("createSmartAccount", [signer0.address]).slice(2);
+  const initCode = Factory_Adderess + AccountFactory.interface.encodeFunctionData("createSmartAccount", [signer0.address]).slice(2);
 
-  const initCode = "0x";
+  // const initCode = "0x";
+
+  try {
+      await entryPoint.getSenderAddress(initCode);
+  } catch (ex) {
+    console.log(ex);
+      sender = "0x" + ex.data.slice(-40);
+    }
 
   console.log(initCode); 
   

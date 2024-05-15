@@ -84,6 +84,12 @@ contract SmartAccountFactory {
         // return address(account);
         bytes32 salt = bytes32(uint256(uint160(_owner)));
         bytes memory bytecode = abi.encodePacked(type(SmartAccount).creationCode,abi.encode(_owner));
+        
+        address addr = Create2.computeAddress(salt, keccak256(bytecode));
+        if (addr.code.length > 0) {
+            return addr;
+        }
+        
         return Create2.deploy(0, salt, bytecode);
     }
 }

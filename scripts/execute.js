@@ -31,6 +31,8 @@ async function main() {
   
   console.log(sender);
 
+  const [signer0] = await ethers.getSigners();
+
     // let sender;
     // try {
     //   await entryPoint.getSenderAddress(initCode);
@@ -41,7 +43,7 @@ async function main() {
   const AccountFactory = await ethers.getContractFactory("SmartAccountFactory");
   // const initCode = Factory_Adderess + ((AccountFactory).interface.encodeFunctionData("createSmartAccount", [accounts[0].address])).slice(2);
 
-  // const initCode = Factory_Adderess + AccountFactory.interface.encodeFunctionData("createSmartAccount", [accounts[0].address]).slice(2);
+  // const initCode = Factory_Adderess + AccountFactory.interface.encodeFunctionData("createSmartAccount", [signer0.address]).slice(2);
 
   const initCode = "0x";
 
@@ -65,23 +67,31 @@ async function main() {
     nonce,
     initCode,
     callData,
-    callGasLimit: 2_000_000 ,
-    verificationGasLimit: 2_000_000,
-    preVerificationGas: 500_000,
+    callGasLimit: 400_000 ,
+    verificationGasLimit: 400_000,
+    preVerificationGas: 150_000,
     maxFeePerGas: ethers.parseUnits("10", "gwei"),
     maxPriorityFeePerGas: ethers.parseUnits("5", "gwei"),
     paymasterAndData: PayMaster_Address,
     signature: "0x"
   }
 
-  const tx = await entryPoint.handleOps([userOp],accounts[0].address,{
-  gasLimit: 1000000, // Adjust this value based on your needs
+  const userOpHash = await entryPoint.getUserOpHash(userOp);
+  
+  const signature = await signer0.signMessage(
+    ethers.getBytes(userOpHash)
+  );
+
+  userOp.signature = signature;
+
+  const tx = await entryPoint.handleOps([userOp],signer0,{
+  gasLimit: 1500000, // Adjust this value based on your needs
   });
 
   console.log("code works till here after the tx");
-
-  const receipt = await tx.wait();
-  // console.log(receipt);
+ 
+  const receipt = await tx.wait(1);
+  console.log(receipt);
 }
 
 main()

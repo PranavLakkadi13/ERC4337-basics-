@@ -14,4 +14,4 @@ ERC4337 or Account Abstraction:
 
     Paymaster is the contract that will be used to pay for the transaction
     
-    Bundler is the contract that will be used to bundle the transaction and send it to the Entry Point contract
+    Bundler is the contract that will be used to bundle the transaction and send it to the Entry Point contract. It also has a important role that is to simulate the userOperation and check if the userOperation is valid or not and only after that it will send the transaction to the Entry Point contract.

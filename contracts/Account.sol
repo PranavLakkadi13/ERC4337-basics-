@@ -6,6 +6,8 @@ import { IAccount } from "@account-abstraction/contracts/interfaces/IAccount.sol
 import { UserOperation } from "@account-abstraction/contracts/interfaces/UserOperation.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "hardhat/console.sol";
+import { Create2 } from "@openzeppelin/contracts/utils/Create2.sol";
+
 
 contract Test {
     constructor (bytes memory sig) {
@@ -74,7 +76,14 @@ contract SmartAccount is IAccount {
 contract SmartAccountFactory {
 
     function createSmartAccount(address _owner) external returns (address) {
-        SmartAccount account = new SmartAccount(_owner);
-        return address(account);
+        // Cant use this method since it uses the create opcode which is not allowed in AA 
+        // since the create opcode uses the nonce as a argument and the bundler maybe not to 
+        // be able to accurately simulate the changes 
+        // 
+        // SmartAccount account = new SmartAccount(_owner);
+        // return address(account);
+        bytes32 salt = bytes32(uint256(uint160(_owner)));
+        bytes memory bytecode = abi.encodePacked(type(SmartAccount).creationCode,abi.encode(_owner));
+        return Create2.deploy(0, salt, bytecode);
     }
 }
